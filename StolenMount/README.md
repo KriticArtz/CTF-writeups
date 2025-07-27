@@ -7,23 +7,23 @@ Tags / Skills Practiced: Wireshark, PCAP Analysis, NFS Enumeration, Data Exfiltr
 1. Objective: 
       An attacker broke into a network, mounted an NFS share, and exfiltrated a sensitive file. I was given a .pcapng file (packet capture of the incident) told to find out what was stolen & how.
 2. Scoping and Info Gathering:
-      Loaded the packet capture from ~/Desktop/challenge.pcapng into Wireshark
+      Loaded the packet capture from `~/Desktop/challenge.pcapng` into Wireshark
       Set display filters to target NFS-related traffic:
-      “nfs || mount || rpc”
+      `nfs || mount || rpc`
       Identified unauthenticated NFS mount attempts and file transfer activity
       Observed several READ_PLUS operations — strong indicator of data exfiltration
 3. Key Analysis & Data Recovery
       [Step 1] Digging into the NFS Traffic
         Saw the attacker successfully mounted the NFS share without authentication
-        Traffic showed them reading files like packet214.bin and packet286.bin
+        Traffic showed them reading files like `packet214.bin` and `packet286.bin`
         Flagged those as high-interest and started investigating both
       [Step 2] Cracking the Archive Password
         Ran strings on packet214.bin and piped it through grep:
-        “strings packet214.bin | grep -i pass”
+        `strings packet214.bin | grep -i pass`
         Found this line:
-        9Archive Password: 90eb7723a657b6597100aafef171d9f2
+       ` 9Archive Password: 90eb7723a657b6597100aafef171d9f2`
         That’s an MD5 hash : I used CrackStation to crack it
-        Password turned out to be: avengers
+        Password turned out to be: `avengers`
       [Step 3] Extracting the Stolen File
         Opened packet286.bin in Wireshark
         Found what looked like the start of a PNG file (89 50 4E 47)
@@ -35,7 +35,7 @@ Tags / Skills Practiced: Wireshark, PCAP Analysis, NFS Enumeration, Data Exfiltr
         Got prompted with a QR code that gave flag
 
 4. Flag:
-	“THM{n0t_S3cur3_f1l3_sh4r1ng}”
+	`THM{n0t_S3cur3_f1l3_sh4r1ng}`
 
 5. Lesson Learned:
       How to track NFS exploitation through Wireshark
